@@ -1,0 +1,159 @@
+# Configuration file for schema mappings and engine parameters in the Data Factory pipeline
+
+TargetSchema:
+  # Definition file
+  definition_file: 'Scripts\Staging\usp_CreateStagingTables.sql'
+  # Target schema and table names
+  target_schema: public
+  target_tables:
+    - Loan
+    - Fraud
+    - Market
+    - Macro
+
+
+Datasets: 
+  
+  # Dataset name
+  Loan:
+    # CSV source files
+    sources:
+      - CreditLoan.csv
+      - financial_risk_analysis_large.csv
+    # target_field: source_field
+    # NB Leave source_field empty if it needs to be generated
+    field_mappings:
+      - AccountID:
+      - AccountType: AccountType
+      - Age: Age
+      - AnnualBonus: AnnualBonuses
+      - AnnualIncome: AnnualIncome
+      - AnnualExpenses: AnnualExpenses
+      - Balance: Monthly_Balance
+      - CreditHistoryLengthMonths: Credit_History_Age
+      - CreditMixRatio:
+      - CreditScore: CreditScore
+      - CreditUtilizationRatio: CreditCardUtilizationRate
+      - CustomerID: Customer_ID
+      - DebtToIncomeRatio: DebtToIncomeRatio
+      - DelayedPayments: Num_of_Delayed_Payment
+      - EmploymentStatus: EmploymentStatus
+      - HomeOwnershipStatus: HomeOwnershipStatus
+      - InterestRate: Interest_Rate
+      - JobTenureMonths: JobTenure
+      - JobTitle: Job_Title
+      - LoanAmount: LoanAmount
+      - LoanDate: 
+      - LoanDurationMonths: LoanDuration
+      - LoanID: Loan_ID
+      - LoanToValueRatio: 
+      - LoanType: Type_of_Loan
+      - MaritalStatus: MaritalStatus
+      - MonthlyPayment: MonthlyDebtPayments
+      - MonthlySavings: MonthlySavings
+      - NumBankAccounts: Num_Bank_Accounts
+      - NumCreditCards: Num_Credit_Card
+      - NumCreditInquiries: NumberOfCreditInquiries
+      - NumDependents: NumberOfDependents
+      - NumLoans: Num_of_Loan      
+      - PaymentBehavior: Payment_Behaviour
+      - PaymentHistoryYears: PaymentHistory
+      - PaymentStatus: PaymentStatus
+      - PreviousLoanDefault: PreviousLoanDefaults
+      - TotalAssets: TotalAssets
+      - TotalLiabilities: TotalLiabilities
+    
+  
+  Fraud:
+    sources:
+      - Op_CardFraud.csv
+    field_mappings:
+      - CustomerID:
+      - DistanceFromHome: distance_from_home
+      - DistanceFromLastTransaction: distance_from_last_transaction
+      - IsFraudulent: fraud
+      - IsOnlineTransaction: online_order
+      - IsUsedChip: used_chip
+      - IsUsedPIN: used_pin_number
+      - RatioToMedianTransactionAmount: ratio_to_median_purchase_price
+      - TransactionID: 
+      - TransactionDate: 
+      - TransactionTypeName: 
+      
+
+  Market:
+    sources:
+      - MarketNASDAQ.csv
+    field_mappings:
+      - CloseValue: Close
+      - EFFR: EFFR
+      - ExchangeRate: ExchangeRate
+      - InterestRate: InterestRate
+      - GoldPrice: Gold
+      - HighestValue: High
+      - LowestValue: Low
+      - MarketDate: Date
+      - MarketName: 
+      - OilPrice: Oil
+      - OpenValue: Open
+      - TEDSpread: TEDSpread
+      - VIX: VIX
+      - Volume: Volume
+
+
+  Macro:
+      sources:
+        - MacroGMD.csv
+      field_mappings:
+        - ConsumerPriceIndex: CPI
+        - CountryName: countryname
+        - DebtRatio: govdebt_GDP
+        - DeficitRatio:
+        - GDP: GDP_USD
+        - HousePriceIndex: HPI
+        - InflationRate: infl
+        - ReportDate: report_date
+        - UnemploymentRate: unemp
+        
+  
+---
+
+Engine_Parameters:
+
+  # Directories
+  input_dir: Datasets/Raw
+  output_dir: Datasets/Cooked
+  log_dir: Logs
+  report_dir: Reports
+  test_dir: Tests
+
+  # Orchestration settings
+  enable_caching: True
+  parallel_processing: False
+  max_workers: auto
+  chunk_size: 1000
+
+  # Data processing settings
+  nsamples: 100
+  knn_neighbors: 5
+  outlier_threshold: 3.0
+  min_numeric_percent: 0.5
+  max_missing_pct: 0.5
+  correlation_threshold: 0.95
+  decimal_rounding: 2
+  normalize_numeric: False
+  onehot_encode_categorical: False
+  integer_patterns: ['num_', 'number', 'count', '_id', 'age', 'delayed']
+  binary_patterns: ['employed', 'self-employed'] # Positive values for binarization
+  add_data_lineage: False
+
+  # Cross-dataset relationships (PK/FK)
+  maintain_id_relationships: True
+  id_relationship_fields: ['CustomerID'] # Target fields
+
+  # Validation and reporting
+  checkpointing: False
+  validate_after_fixing: True
+  statistical_report: True
+  validation_report': True
+  data_quality_report': True
